@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -16,9 +17,8 @@ client = OpenAI(api_key=API_KEY)
 def analyze_with_ai(data: dict) -> str:
     """
     Sends the input data to the LLM and returns the raw text response.
-    Expected response format: valid JSON string only.
+    The expected output is a valid JSON string only.
     """
-
     prompt = f"""
 You are an AI decision engine.
 
