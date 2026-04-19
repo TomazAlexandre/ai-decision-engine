@@ -1,15 +1,11 @@
 from fastapi import FastAPI
-
-from app.database.connection import Base, engine
 from app.routers import analyze
+
+from app.database.database import engine, Base
+from app.database import models  # 👈 IMPORTANTE
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="AI Decision Engine")
+app = FastAPI()
 
 app.include_router(analyze.router)
-
-
-@app.get("/")
-def root():
-    return {"message": "AI Decision Engine running"}

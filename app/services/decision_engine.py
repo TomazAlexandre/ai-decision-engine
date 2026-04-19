@@ -1,62 +1,38 @@
-import json
-
 from sqlalchemy.orm import Session
+from app.database.models import Decision
 
-from app.database.models import DecisionLog
-from app.services.ai_service import analyze_with_ai
-
-
-def make_decision(data: dict, db: Session) -> dict:
-    """
-    Calls the AI service, validates the response, stores the decision,
-    and returns a normalized payload.
-    """
+def make_decision(data, db: Session):
     try:
-        ai_raw = analyze_with_ai(data)
-        parsed = json.loads(ai_raw)
+        if data.value > 100:
+            decision = "APPROVED"
+            confidence = 0.9
+            source = "rule"
+        else:
+            decision = "REJECTED"
+            confidence = 0.6
+            source = "rule"
 
-        decision = parsed.get("decision", "ERROR")
-        confidence = parsed.get("confidence", 0)
+        db_decision = Decision(
+            user=data.user,
+            value=data.value,
+            decision=decision,
+            confidence=confidence,
+            source=source
+        )
 
-        if decision not in ["APPROVE", "REJECT"]:
-            raise ValueError(f"Invalid decision returned by AI: {decision}")
+        db.add(db_decision)
+        db.commit()
+        db.refresh(db_decision)
 
-        try:
-            confidence = float(confidence)
-        except (TypeError, ValueError) as exc:
-            raise ValueError(f"Invalid confidence value returned by AI: {confidence}") from exc
-
-        if confidence < 0 or confidence > 1:
-            raise ValueError(f"Confidence out of range: {confidence}")
-
-        result = {
+        return {
             "decision": decision,
             "confidence": confidence,
-            "source": "ai",
-            "input": data,
+            "source": source
         }
 
-    except Exception as e:
-        result = {
+    except Exception:
+        return {
             "decision": "ERROR",
-            "confidence": 0,
-            "source": "fallback",
-            "input": data,
-            "error": str(e),
+            "confidence": 0.0,
+            "source": "fallback"
         }
-
-    log = DecisionLog(
-        input_data=json.dumps(data, ensure_ascii=False),
-        decision=result["decision"],
-        confidence=result["confidence"],
-        source=result["source"],
-    )
-
-    db.add(log)
-    db.commit()
-    db.refresh(log)
-
-    result["id"] = log.id
-    result["created_at"] = log.created_at.isoformat()
-
-    return result
