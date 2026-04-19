@@ -1,286 +1,122 @@
-# AI Decision Engine
+# 🚀 AI Decision Engine API
 
-An intelligent backend API built with **Python**, **FastAPI**, and **OpenAI**, designed to analyze input data, generate decisions using AI, and persist results in a database.
-
-This project demonstrates a real-world backend architecture with:
-
-* AI-powered decision analysis
-* structured API endpoints
-* fallback handling
-* persistence with SQLite + SQLAlchemy
-* decision history tracking
+A production-ready decision engine API built with FastAPI, designed to analyze input data and return structured decisions based on business rules, with full database persistence.
 
 ---
 
-## Features
+## 🌐 Live API
 
-* REST API built with FastAPI
-* AI-based decision engine using OpenAI
-* Structured JSON response parsing
-* Fallback handling when AI response fails
-* Persistence layer using SQLite + SQLAlchemy
-* Decision history endpoint
-* Environment-based configuration
+👉 https://ai-decision-engine-583f.onrender.com/docs
 
 ---
 
-## Tech Stack
+## ⚙️ Tech Stack
 
 * Python
 * FastAPI
-* OpenAI API
 * SQLAlchemy
 * SQLite
 * Uvicorn
-* python-dotenv
 
 ---
 
-## Project Structure
+## 🧠 Overview
 
-```bash
-ai-decision-engine/
-├── app/
-│   ├── main.py
-│   ├── routers/
-│   │   └── analyze.py
-│   ├── services/
-│   │   ├── ai_service.py
-│   │   └── decision_engine.py
-│   ├── database/
-│   │   ├── connection.py
-│   │   └── models.py
-├── .env.example
-├── .gitignore
-├── requirements.txt
-└── README.md
+This API processes incoming data and generates decisions using rule-based logic.
+
+Each request:
+
+* is validated using Pydantic schemas
+* processed through a decision engine service
+* stored in a database for traceability
+* returns a structured response with decision metadata
+
+---
+
+## 📥 Example Request
+
+```json
+{
+  "user": "tomaz",
+  "value": 150
+}
 ```
 
 ---
 
-## How It Works
+## 📤 Example Response
 
-The API receives input data through the `/analyze` endpoint.
-
-Flow:
-
-1. The request is sent to the decision engine
-2. The AI model analyzes the input
-3. The response is parsed and validated
-4. The result is saved to the database
-5. The API returns the structured decision
-6. The `/history` endpoint can be used to inspect previous decisions
+```json
+{
+  "decision": "APPROVED",
+  "confidence": 0.9,
+  "source": "rule"
+}
+```
 
 ---
 
-## Installation
+## 🏗️ Architecture
 
-### 1. Clone the repository
+The project follows a layered architecture:
 
-```bash
-git clone https://github.com/TomazAlexandre/ai-decision-engine.git
-cd ai-decision-engine
-```
+* `routers/` → API endpoints
+* `services/` → business logic (decision engine)
+* `schemas/` → request/response validation
+* `database/` → models and DB connection
 
-### 2. Create and activate a virtual environment
+---
 
-#### Windows (cmd)
+## 💾 Database Persistence
 
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
+All decisions are stored using SQLAlchemy, enabling:
 
-#### Windows (PowerShell)
+* historical tracking
+* auditability
+* future analytics
 
-```bash
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
+---
 
-### 3. Install dependencies
+## 🚀 Running Locally
 
 ```bash
 pip install -r requirements.txt
+uvicorn app.main:app --reload
 ```
 
 ---
 
-## Environment Variables
+## 📌 Features
 
-Create a `.env` file in the root of the project.
-
-Use `.env.example` as reference:
-
-```env
-OPENAI_API_KEY=your_api_key_here
-MODEL_ID=gpt-4o-mini
-```
+* Rule-based decision engine
+* Fallback mechanism for error handling
+* Clean architecture (service-oriented design)
+* Database persistence
+* Production deployment
 
 ---
 
-## Running the Project
+## 🎯 Purpose
 
-Start the API locally with:
+This project was built to demonstrate backend engineering skills, including:
 
-```bash
-python -m uvicorn app.main:app --reload
-```
-
-Swagger docs will be available at:
-
-```bash
-http://127.0.0.1:8000/docs
-```
-
----
-
-## API Endpoints
-
-### `GET /`
-
-Health/root endpoint
-
-#### Response
-
-```json
-{
-  "message": "AI Decision Engine running"
-}
-```
-
----
-
-### `POST /analyze`
-
-Analyzes input data and returns an AI-based decision.
-
-#### Example request
-
-```json
-{
-  "value": 80,
-  "user": "test"
-}
-```
-
-#### Example response
-
-```json
-{
-  "decision": "APPROVE",
-  "confidence": 0.84,
-  "source": "ai",
-  "input": {
-    "value": 80,
-    "user": "test"
-  },
-  "id": 1,
-  "created_at": "2026-04-14T10:00:00.000000"
-}
-```
-
-#### Fallback response example
-
-```json
-{
-  "decision": "ERROR",
-  "confidence": 0,
-  "source": "fallback",
-  "input": {
-    "value": 80,
-    "user": "test"
-  },
-  "error": "Invalid decision returned by AI"
-}
-```
-
----
-
-### `GET /history`
-
-Returns the list of stored decisions.
-
-#### Example response
-
-```json
-[
-  {
-    "id": 1,
-    "input_data": {
-      "value": 80,
-      "user": "test"
-    },
-    "decision": "APPROVE",
-    "confidence": 0.84,
-    "source": "ai",
-    "created_at": "2026-04-14T10:00:00.000000"
-  }
-]
-```
-
----
-
-## Database
-
-This project uses **SQLite** for simplicity and **SQLAlchemy** as ORM.
-
-A local database file is created automatically:
-
-```bash
-decision_engine.db
-```
-
-The database stores:
-
-* input payload
-* AI decision
-* confidence score
-* source of response
-* timestamp
-
----
-
-## Example Use Cases
-
-This project can be extended for scenarios such as:
-
-* approval/rejection workflows
-* intelligent scoring systems
-* document or text evaluation
-* AI-assisted automation pipelines
-* internal decision support systems
-
----
-
-## Engineering Highlights
-
-This project was built with focus on:
-
-* clean backend structure
-* separation of concerns
-* AI integration
+* API development
+* system architecture
 * data persistence
-* practical production-oriented design
-
-It is intended as a portfolio project to demonstrate backend and AI engineering skills.
+* real-world deployment
 
 ---
 
-## Next Steps
+## 🔮 Next Steps
 
-Planned improvements:
-
-* Docker support
-* automated tests with pytest
-* deployment to Render or Railway
-* request validation with Pydantic schemas
-* improved logging
-* support for multiple decision strategies
+* API Key authentication
+* logging system
+* dashboard for data visualization
+* AI-based decision enhancement
 
 ---
 
-## Author
+## 👨‍💻 Author
 
 **Tomaz Alexandre**
 
